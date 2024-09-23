@@ -36,6 +36,9 @@ class GraphVisualization {
                     #graph { width: 100vw; height: 100vh; }
                     .node text {
                         font: 12px sans-serif;
+                        fill: white;
+                        stroke: black;
+                        stroke-width: 0.5px;
                     }
                     .node circle {
                         stroke: #fff;
@@ -60,19 +63,22 @@ class GraphVisualization {
                         .attr('width', width)
                         .attr('height', height);
 
-                    const simulation = d3.forceSimulation(data.nodes)
-                        .force('link', d3.forceLink(data.links).id(d => d.id))
-                        .force('charge', d3.forceManyBody().strength(-300))
-                        .force('center', d3.forceCenter(width / 2, height / 2));
+                    const g = svg.append('g');
 
-                    const link = svg.append('g')
+                    const simulation = d3.forceSimulation(data.nodes)
+                        .force('link', d3.forceLink(data.links).id(d => d.id).distance(100))
+                        .force('charge', d3.forceManyBody().strength(-300))
+                        .force('center', d3.forceCenter(width / 2, height / 2))
+                        .force('collide', d3.forceCollide().radius(30));
+
+                    const link = g.append('g')
                         .attr('class', 'links')
                         .selectAll('line')
                         .data(data.links)
                         .enter().append('line')
                         .attr('class', 'link');
 
-                    const node = svg.append('g')
+                    const node = g.append('g')
                         .attr('class', 'nodes')
                         .selectAll('.node')
                         .data(data.nodes)
@@ -134,10 +140,20 @@ class GraphVisualization {
                     const zoom = d3.zoom()
                         .scaleExtent([0.1, 10])
                         .on('zoom', (event) => {
-                            svg.selectAll('g').attr('transform', event.transform);
+                            g.attr('transform', event.transform);
                         });
 
                     svg.call(zoom);
+
+                    // Center the graph initially
+                    const initialScale = 0.75;
+                    svg.call(zoom.transform, d3.zoomIdentity
+                        .translate(width / 2, height / 2)
+                        .scale(initialScale)
+                        .translate(-width / 2, -height / 2));
+
+                    // Stop the simulation after a short time
+                    setTimeout(() => simulation.stop(), 3000);
                 </script>
             </body>
             </html>
