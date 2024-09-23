@@ -2,9 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GraphVisualization = void 0;
 const vscode = require("vscode");
+const path = require("path");
 class GraphVisualization {
-    constructor(context) {
+    constructor(context, workspaceRoot) {
         this.context = context;
+        this.workspaceRoot = workspaceRoot;
     }
     show(data) {
         if (this.panel) {
@@ -20,6 +22,19 @@ class GraphVisualization {
             });
         }
         this.panel.webview.html = this.getWebviewContent(data);
+        // Set up the message listener
+        this.panel.webview.onDidReceiveMessage((message) => {
+            switch (message.command) {
+                case "openFile":
+                    const filePath = message.file.startsWith(this.workspaceRoot)
+                        ? message.file
+                        : path.join(this.workspaceRoot, message.file);
+                    vscode.workspace.openTextDocument(filePath).then((doc) => {
+                        vscode.window.showTextDocument(doc);
+                    });
+                    return;
+            }
+        }, undefined, this.context.subscriptions);
     }
     getWebviewContent(data) {
         const d3Uri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, "node_modules", "d3", "dist", "d3.min.js"));
@@ -53,6 +68,7 @@ class GraphVisualization {
             <body>
                 <div id="graph"></div>
                 <script>
+                    const vscode = acquireVsCodeApi();
                     const data = ${JSON.stringify(data)};
                     
                     const width = window.innerWidth;
@@ -87,7 +103,8 @@ class GraphVisualization {
                         .call(d3.drag()
                             .on('start', dragstarted)
                             .on('drag', dragged)
-                            .on('end', dragended));
+                            .on('end', dragended))
+                        .on('click', clicked);  // Add click event
 
                     node.append('circle')
                         .attr('r', 5)
@@ -134,6 +151,15 @@ class GraphVisualization {
                         if (!event.active) simulation.alphaTarget(0);
                         d.fx = null;
                         d.fy = null;
+                    }
+
+                    function clicked(event, d) {
+                        if (d.type === 'file') {
+                            vscode.postMessage({
+                                command: 'openFile',
+                                file: d.id
+                            });
+                        }
                     }
 
                     // Add zoom functionality

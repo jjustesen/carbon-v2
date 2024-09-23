@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   fileAnalyzer = new FileAnalyzer(workspaceRoot);
   treeDataProvider = new ImportExportTreeProvider();
-  graphVisualization = new GraphVisualization(context);
+  graphVisualization = new GraphVisualization(context, workspaceRoot);
 
   const treeView = vscode.window.createTreeView("importExportExplorer", {
     treeDataProvider,
@@ -73,7 +73,7 @@ function analyzeCurrentFile() {
     }
 
     treeDataProvider.updateData(analysis);
-    vscode.window.showInformationMessage("Import/Export analysis updated");
+    // vscode.window.showInformationMessage("Import/Export analysis updated");
   }
 }
 

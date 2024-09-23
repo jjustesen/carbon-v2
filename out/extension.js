@@ -19,7 +19,7 @@ function activate(context) {
     }
     fileAnalyzer = new fileAnalyzer_1.FileAnalyzer(workspaceRoot);
     treeDataProvider = new treeViewProvider_1.ImportExportTreeProvider();
-    graphVisualization = new graphVisualization_1.GraphVisualization(context);
+    graphVisualization = new graphVisualization_1.GraphVisualization(context, workspaceRoot);
     const treeView = vscode.window.createTreeView("importExportExplorer", {
         treeDataProvider,
     });
@@ -53,7 +53,7 @@ function analyzeCurrentFile() {
             }
         }
         treeDataProvider.updateData(analysis);
-        vscode.window.showInformationMessage("Import/Export analysis updated");
+        // vscode.window.showInformationMessage("Import/Export analysis updated");
     }
 }
 function showGraph() {
