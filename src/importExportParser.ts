@@ -12,7 +12,7 @@ export function parseExports(content: string): any {
   function visit(node: ts.Node) {
     if (ts.isExportDeclaration(node)) {
       if (node.exportClause && ts.isNamedExports(node.exportClause)) {
-        node.exportClause.elements.forEach((element) => {
+        node.exportClause.elements.forEach((element: any) => {
           exports[element.name.text] = "named";
         });
       }
