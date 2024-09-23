@@ -33,7 +33,7 @@ export class GraphVisualization {
     data.nodes = data.nodes.map((node: any) => {
       if (node.type === "file") {
         node.fullPath = path.join(this.workspaceRoot, node.id);
-        node.path = path.dirname(node.id);
+        node.path = node.id;
         node.fileName = path.basename(node.id);
       }
       return node;
