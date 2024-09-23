@@ -43,7 +43,10 @@ class FileAnalyzer {
             file = path.join(dir, file);
             const stat = fs.statSync(file);
             if (stat && stat.isDirectory()) {
-                results = results.concat(this.getAllFiles(file));
+                // Ignore node_modules directory
+                if (path.basename(file) !== "node_modules") {
+                    results = results.concat(this.getAllFiles(file));
+                }
             }
             else {
                 if (path.extname(file) === ".js" ||
