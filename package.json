@@ -1,0 +1,43 @@
+{
+  "name": "vscode-import-export-analyzer",
+  "displayName": "Import/Export Analyzer",
+  "description": "Analyze and visualize imports and exports in your project",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.analyzeImportsExports"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.analyzeImportsExports",
+        "title": "Analyze Imports and Exports"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "importExportExplorer",
+          "name": "Import/Export Explorer"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.60.0",
+    "@types/node": "^14.x",
+    "typescript": "^4.3.5"
+  }
+}
