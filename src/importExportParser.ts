@@ -44,7 +44,7 @@ export function parseExports(content: string): any {
         } else if (ts.isVariableStatement(node)) {
           node.declarationList.declarations.forEach((declaration) => {
             if (ts.isIdentifier(declaration.name)) {
-              exports[declaration.name.text] = "named";
+              exports[declaration.name.text] = "const";
             }
           });
         }
