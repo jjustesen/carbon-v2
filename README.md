@@ -1,71 +1,52 @@
-# project-explorer README
+# VSCode Import/Export Analyzer
 
-This is the README for your extension "project-explorer". After writing up a brief description, we recommend including the following sections.
+## Overview
+
+The VSCode Import/Export Analyzer is a powerful extension for Visual Studio Code that helps developers understand and visualize the structure of their JavaScript and TypeScript projects. By analyzing import and export statements, this tool provides valuable insights into module dependencies and code organization.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Import/Export Analysis**: Quickly identify where files are imported and exported within your project.
+- **Export Breakdown**: Analyze exports in detail, including individual functions and default exports.
+- **Import Tracking**: Locate where each export is being used throughout your codebase.
+- **Visual Dependency Graph**: Generate an interactive graphical representation of your project's import/export structure.
+- **Real-time Updates**: Automatically update analysis as you modify your code.
 
-For example if there is an image subfolder under your extension project workspace:
+<!-- ## Installation
 
-\!\[feature X\]\(images/feature-x.png\)
+1. Download the `.vsix` file from the latest release.
+2. Open VSCode and navigate to the Extensions view (Ctrl+Shift+X).
+3. Click on the '...' menu and select 'Install from VSIX...'.
+4. Choose the downloaded `.vsix` file. -->
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Usage
+
+1. Open a JavaScript or TypeScript project in VSCode.
+2. Use the command palette (Ctrl+Shift+P) and search for:
+   - "Analyze Imports and Exports" to run the analysis
+   - "Show Import/Export Graph" to visualize the dependency structure
+3. The Import/Export Explorer view will display detailed information about the current file's imports and exports.
+
+## Benefits
+
+- **Improved Code Navigation**: Quickly understand how modules are connected.
+- **Refactoring Assistance**: Easily identify the impact of moving or renaming modules.
+- **Dependency Management**: Visualize and manage complex dependency structures.
+- **Code Review Aid**: Simplify the process of reviewing import/export patterns in pull requests.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Visual Studio Code version 1.60.0 or higher
+- Node.js and npm installed on your system
 
-## Extension Settings
+## Contributing
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-For example:
+## License
 
-This extension contributes the following settings:
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+## Keywords
 
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+VSCode extension, static analysis, code visualization, dependency graph, module imports, module exports, JavaScript, TypeScript, development tools, code organization, refactoring
