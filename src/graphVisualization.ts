@@ -81,6 +81,7 @@ export class GraphVisualization {
                     .node circle {
                         stroke: #fff;
                         stroke-width: 1.5px;
+                        cursor: pointer;
                     }
                     .link {
                         stroke: #999;
