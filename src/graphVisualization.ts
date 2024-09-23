@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import * as d3 from "d3";
 import * as path from "path";
+import * as d3 from "d3";
 
 export class GraphVisualization {
   private panel: vscode.WebviewPanel | undefined;
@@ -28,6 +28,16 @@ export class GraphVisualization {
         this.panel = undefined;
       });
     }
+
+    // Adjust file paths in the data
+    data.nodes = data.nodes.map((node: any) => {
+      if (node.type === "file") {
+        node.fullPath = path.join(this.workspaceRoot, node.id);
+        node.path = path.dirname(node.id);
+        node.fileName = path.basename(node.id);
+      }
+      return node;
+    });
 
     this.panel.webview.html = this.getWebviewContent(data);
 
@@ -73,7 +83,7 @@ export class GraphVisualization {
                     body { margin: 0; padding: 0; overflow: hidden; }
                     #graph { width: 100vw; height: 100vh; }
                     .node text {
-                        font: 12px sans-serif;
+                        font: 10px sans-serif;
                         fill: white;
                         stroke: black;
                         stroke-width: 0.5px;
@@ -87,10 +97,20 @@ export class GraphVisualization {
                         stroke: #999;
                         stroke-opacity: 0.6;
                     }
+                    .tooltip {
+                        position: absolute;
+                        background-color: rgba(0, 0, 0, 0.7);
+                        color: white;
+                        padding: 5px;
+                        border-radius: 5px;
+                        font-size: 12px;
+                        pointer-events: none;
+                    }
                 </style>
             </head>
             <body>
                 <div id="graph"></div>
+                <div class="tooltip" style="opacity: 0;"></div>
                 <script>
                     const vscode = acquireVsCodeApi();
                     const data = ${JSON.stringify(data)};
@@ -104,6 +124,8 @@ export class GraphVisualization {
                         .attr('height', height);
 
                     const g = svg.append('g');
+
+                    const tooltip = d3.select('.tooltip');
 
                     const simulation = d3.forceSimulation(data.nodes)
                         .force('link', d3.forceLink(data.links).id(d => d.id).distance(100))
@@ -128,19 +150,23 @@ export class GraphVisualization {
                             .on('start', dragstarted)
                             .on('drag', dragged)
                             .on('end', dragended))
-                        .on('click', clicked);  // Add click event
+                        .on('click', clicked)
+                        .on('mouseover', showTooltip)
+                        .on('mouseout', hideTooltip);
 
                     node.append('circle')
-                        .attr('r', 5)
-                        .attr('fill', d => d.type === 'file' ? '#69b3a2' : d.type === 'export' ? '#404080' : '#ff7f0e');
+                        .attr('r', 6)
+                        .attr('fill', d => {
+                            if (d.type === 'file') return '#4CAF50';
+                            if (d.id.toLowerCase().includes('enum')) return '#3F51B5';
+                            if (d.id.startsWith('I')) return '#FF9800';
+                            return '#E91E63';
+                        });
 
                     node.append('text')
                         .attr('dy', -10)
                         .attr('text-anchor', 'middle')
-                        .text(d => d.id.split('/').pop());
-
-                    node.append('title')
-                        .text(d => d.id);
+                        .text(d => d.type === 'file' ? d.fileName : d.id);
 
                     simulation
                         .nodes(data.nodes)
@@ -181,9 +207,26 @@ export class GraphVisualization {
                         if (d.type === 'file') {
                             vscode.postMessage({
                                 command: 'openFile',
-                                file: d.id
+                                file: d.path || d.id
                             });
                         }
+                    }
+
+                    function showTooltip(event, d) {
+                        if (d.type === 'file') {
+                            tooltip.transition()
+                                .duration(200)
+                                .style('opacity', .9);
+                            tooltip.html(d.path || d.id)
+                                .style('left', (event.pageX + 10) + 'px')
+                                .style('top', (event.pageY - 28) + 'px');
+                        }
+                    }
+
+                    function hideTooltip() {
+                        tooltip.transition()
+                            .duration(500)
+                            .style('opacity', 0);
                     }
 
                     // Add zoom functionality
