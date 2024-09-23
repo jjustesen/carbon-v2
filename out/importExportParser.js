@@ -7,7 +7,7 @@ function parseExports(content) {
     const sourceFile = ts.createSourceFile("temp.ts", content, ts.ScriptTarget.Latest, true);
     const exports = {};
     function visit(node) {
-        var _a, _b;
+        var _a;
         if (ts.isExportDeclaration(node)) {
             if (node.exportClause && ts.isNamedExports(node.exportClause)) {
                 node.exportClause.elements.forEach((element) => {
@@ -18,21 +18,37 @@ function parseExports(content) {
         else if (ts.isExportAssignment(node)) {
             exports["default"] = "default";
         }
-        else if (ts.isFunctionDeclaration(node) &&
-            ((_a = node.modifiers) === null || _a === void 0 ? void 0 : _a.some((m) => m.kind === ts.SyntaxKind.ExportKeyword))) {
-            if (node.name) {
-                exports[node.name.text] = node.modifiers.some((m) => m.kind === ts.SyntaxKind.DefaultKeyword)
-                    ? "default"
-                    : "named";
-            }
-        }
-        else if (ts.isVariableStatement(node) &&
-            ((_b = node.modifiers) === null || _b === void 0 ? void 0 : _b.some((m) => m.kind === ts.SyntaxKind.ExportKeyword))) {
-            node.declarationList.declarations.forEach((declaration) => {
-                if (ts.isIdentifier(declaration.name)) {
-                    exports[declaration.name.text] = "named";
+        else if (ts.isFunctionDeclaration(node) ||
+            ts.isClassDeclaration(node) ||
+            ts.isInterfaceDeclaration(node) ||
+            ts.isTypeAliasDeclaration(node) ||
+            ts.isEnumDeclaration(node) ||
+            ts.isVariableStatement(node)) {
+            if ((_a = node.modifiers) === null || _a === void 0 ? void 0 : _a.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)) {
+                if (ts.isFunctionDeclaration(node) || ts.isClassDeclaration(node)) {
+                    if (node.name) {
+                        exports[node.name.text] = node.modifiers.some((m) => m.kind === ts.SyntaxKind.DefaultKeyword)
+                            ? "default"
+                            : "named";
+                    }
                 }
-            });
+                else if (ts.isInterfaceDeclaration(node)) {
+                    exports[node.name.text] = "interface";
+                }
+                else if (ts.isTypeAliasDeclaration(node)) {
+                    exports[node.name.text] = "type";
+                }
+                else if (ts.isEnumDeclaration(node)) {
+                    exports[node.name.text] = "enum";
+                }
+                else if (ts.isVariableStatement(node)) {
+                    node.declarationList.declarations.forEach((declaration) => {
+                        if (ts.isIdentifier(declaration.name)) {
+                            exports[declaration.name.text] = "named";
+                        }
+                    });
+                }
+            }
         }
         ts.forEachChild(node, visit);
     }

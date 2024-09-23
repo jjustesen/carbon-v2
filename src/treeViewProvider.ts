@@ -48,7 +48,9 @@ export class ImportExportTreeProvider
           ([name, type]) =>
             new ImportExportItem(
               `${name} (${type})`,
-              vscode.TreeItemCollapsibleState.None
+              vscode.TreeItemCollapsibleState.None,
+              undefined,
+              this.getIconPath(type as string)
             )
         )
       );
@@ -71,6 +73,7 @@ export class ImportExportTreeProvider
             fileName,
             vscode.TreeItemCollapsibleState.None,
             undefined,
+            undefined,
             {
               command: "vscode.open",
               title: "Open File",
@@ -82,6 +85,39 @@ export class ImportExportTreeProvider
     }
     return Promise.resolve([]);
   }
+
+  private getIconPath(
+    type: string
+  ): { light: string; dark: string } | undefined {
+    const iconName =
+      type === "interface"
+        ? "interface"
+        : type === "type"
+        ? "type"
+        : type === "enum"
+        ? "enum"
+        : type === "default"
+        ? "default"
+        : "named";
+    return {
+      light: path.join(
+        __filename,
+        "..",
+        "..",
+        "resources",
+        "light",
+        `${iconName}.svg`
+      ),
+      dark: path.join(
+        __filename,
+        "..",
+        "..",
+        "resources",
+        "dark",
+        `${iconName}.svg`
+      ),
+    };
+  }
 }
 
 class ImportExportItem extends vscode.TreeItem {
@@ -89,9 +125,11 @@ class ImportExportItem extends vscode.TreeItem {
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
     public readonly files?: string[],
+    iconPath?: { light: string; dark: string },
     public readonly command?: vscode.Command
   ) {
     super(label, collapsibleState);
+    this.iconPath = iconPath;
     this.command = command;
   }
 }

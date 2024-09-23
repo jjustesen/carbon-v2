@@ -19,25 +19,36 @@ export function parseExports(content: string): any {
     } else if (ts.isExportAssignment(node)) {
       exports["default"] = "default";
     } else if (
-      ts.isFunctionDeclaration(node) &&
-      node.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)
+      ts.isFunctionDeclaration(node) ||
+      ts.isClassDeclaration(node) ||
+      ts.isInterfaceDeclaration(node) ||
+      ts.isTypeAliasDeclaration(node) ||
+      ts.isEnumDeclaration(node) ||
+      ts.isVariableStatement(node)
     ) {
-      if (node.name) {
-        exports[node.name.text] = node.modifiers.some(
-          (m) => m.kind === ts.SyntaxKind.DefaultKeyword
-        )
-          ? "default"
-          : "named";
-      }
-    } else if (
-      ts.isVariableStatement(node) &&
-      node.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)
-    ) {
-      node.declarationList.declarations.forEach((declaration) => {
-        if (ts.isIdentifier(declaration.name)) {
-          exports[declaration.name.text] = "named";
+      if (node.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)) {
+        if (ts.isFunctionDeclaration(node) || ts.isClassDeclaration(node)) {
+          if (node.name) {
+            exports[node.name.text] = node.modifiers.some(
+              (m) => m.kind === ts.SyntaxKind.DefaultKeyword
+            )
+              ? "default"
+              : "named";
+          }
+        } else if (ts.isInterfaceDeclaration(node)) {
+          exports[node.name.text] = "interface";
+        } else if (ts.isTypeAliasDeclaration(node)) {
+          exports[node.name.text] = "type";
+        } else if (ts.isEnumDeclaration(node)) {
+          exports[node.name.text] = "enum";
+        } else if (ts.isVariableStatement(node)) {
+          node.declarationList.declarations.forEach((declaration) => {
+            if (ts.isIdentifier(declaration.name)) {
+              exports[declaration.name.text] = "named";
+            }
+          });
         }
-      });
+      }
     }
 
     ts.forEachChild(node, visit);
